@@ -1,5 +1,5 @@
 // Set this to the HTTPS URL where your backend is hosted.
-const API_BASE = "https://YOUR-JARVIS-BACKEND.example.com";
+const API_BASE = const API_BASE = "https://your-jarvis-backend....";
 
 const $ = id => document.getElementById(id);
 const messages = $("messages");
