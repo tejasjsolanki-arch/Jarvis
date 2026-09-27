@@ -50,3 +50,62 @@ function setupSpeech(){
 function stop(){listening=false;document.body.classList.remove("listening");$("state").textContent="ONLINE";$("label").textContent="TAP TO SPEAK"}
 $("mic").onclick=()=>{if(!recognition)setupSpeech();if(!recognition)return;if(listening){recognition.stop();stop()}else recognition.start()};
 add("Systems online. How can I assist you?",false); setupSpeech();
+// ===== JARVIS V2 VISUAL CORE =====
+
+const jarvisV2Style = document.createElement("style");
+
+jarvisV2Style.textContent = `
+#mic {
+  position: relative;
+  transition: transform .25s ease, box-shadow .25s ease;
+}
+
+#mic.jarvis-active {
+  animation: jarvisPulse 1.2s infinite;
+  box-shadow: 0 0 15px #2196ff, 0 0 35px #2196ff;
+  transform: scale(1.06);
+}
+
+@keyframes jarvisPulse {
+  0%,100% {
+    box-shadow: 0 0 10px #2196ff, 0 0 20px #2196ff;
+  }
+  50% {
+    box-shadow: 0 0 25px #2196ff, 0 0 55px #2196ff;
+  }
+}
+`;
+
+document.head.appendChild(jarvisV2Style);
+
+// Watch JARVIS status
+const jarvisState = document.getElementById("state");
+const jarvisMic = document.getElementById("mic");
+
+if (jarvisState && jarvisMic) {
+
+  const updateJarvisVisual = () => {
+
+    const state = jarvisState.textContent.toUpperCase();
+
+    if (
+      state.includes("LISTEN") ||
+      state.includes("PROCESS") ||
+      state.includes("THINK")
+    ) {
+      jarvisMic.classList.add("jarvis-active");
+    } else {
+      jarvisMic.classList.remove("jarvis-active");
+    }
+  };
+
+  const observer = new MutationObserver(updateJarvisVisual);
+
+  observer.observe(jarvisState, {
+    childList: true,
+    characterData: true,
+    subtree: true
+  });
+
+  updateJarvisVisual();
+}
