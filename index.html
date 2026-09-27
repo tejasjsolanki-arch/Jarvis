@@ -1,0 +1,42 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no">
+<meta name="theme-color" content="#010509">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<link rel="manifest" href="manifest.json">
+<link rel="stylesheet" href="styles.css">
+<title>JARVIS V2</title>
+</head>
+<body>
+<div class="app">
+<header><div><div class="brand">J A R V I S</div><div class="sub">V2 • PERSONAL AI SYSTEM</div></div><div class="online">● ONLINE</div></header>
+
+<section class="core-wrap">
+<div class="core" id="core"><div class="orb a"></div><div class="orb b"></div><div class="orb c"></div><div class="inner"><b>JARVIS</b><span id="state">ONLINE</span></div></div>
+</section>
+
+<section class="panel">
+<button id="mic" class="mic">⌕</button>
+<div id="label">TAP TO SPEAK</div>
+<div id="transcript">Ready for your command.</div>
+<div class="row"><input id="input" placeholder="Ask JARVIS anything…"><button id="send">↑</button></div>
+</section>
+
+<div class="grid">
+<button data-cmd="Open Instagram">◈<small>OPEN APP</small></button>
+<button data-cmd="Set a 10 minute timer">◴<small>TIMER</small></button>
+<button data-cmd="Remind me to submit my assignment">◷<small>REMINDER</small></button>
+<button data-cmd="Take a note saying ">▤<small>NOTE</small></button>
+<button data-cmd="Search the web for architecture case studies">⌕<small>WEB SEARCH</small></button>
+<button data-cmd="Play my music">♪<small>MUSIC</small></button>
+</div>
+
+<section class="chat panel"><div class="chat-title">JARVIS CHAT <button id="clear">CLEAR</button></div><div id="messages"></div></section>
+</div>
+<nav><span class="active">⌂<small>Home</small></span><span>◴<small>History</small></span><span>⚙<small>System</small></span></nav>
+<script src="app.js"></script>
+</body>
+</html>
