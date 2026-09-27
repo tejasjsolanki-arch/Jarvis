@@ -109,3 +109,147 @@ if (jarvisState && jarvisMic) {
 
   updateJarvisVisual();
 }
+// ===== JARVIS V2 HUD STATES =====
+
+const core = document.getElementById("core");
+const stateEl = document.getElementById("state");
+
+const hudStyle = document.createElement("style");
+
+hudStyle.textContent = `
+/* Fix iPhone header spacing */
+header {
+  padding-top: 10px;
+  min-height: 58px;
+}
+
+.brand {
+  font-size: 24px;
+  letter-spacing: 6px;
+  white-space: nowrap;
+}
+
+/* JARVIS CORE STATES */
+#core {
+  transition: transform .4s ease, filter .4s ease;
+}
+
+#core.state-online {
+  animation: coreIdle 3s ease-in-out infinite;
+}
+
+#core.state-listening {
+  animation: coreListening 1.1s ease-in-out infinite;
+  filter: drop-shadow(0 0 18px #1597ff);
+}
+
+#core.state-processing {
+  animation: coreThinking .65s linear infinite;
+  filter: drop-shadow(0 0 28px #1597ff);
+}
+
+#core.state-speaking {
+  animation: coreSpeaking .8s ease-in-out infinite;
+  filter: drop-shadow(0 0 35px #67c4ff);
+}
+
+@keyframes coreIdle {
+  0%,100% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.025);
+  }
+}
+
+@keyframes coreListening {
+  0%,100% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.07);
+  }
+}
+
+@keyframes coreThinking {
+  from {
+    transform: rotate(0deg) scale(1);
+  }
+  to {
+    transform: rotate(360deg) scale(1.04);
+  }
+}
+
+@keyframes coreSpeaking {
+  0%,100% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.1);
+  }
+}
+
+/* Extra energy glow */
+#core.state-listening .inner {
+  box-shadow:
+    0 0 30px #1597ff88,
+    0 0 65px #1597ff55;
+}
+
+#core.state-processing .inner {
+  box-shadow:
+    0 0 40px #1597ffcc,
+    0 0 80px #1597ff66;
+}
+
+#core.state-speaking .inner {
+  box-shadow:
+    0 0 45px #67c4ffcc,
+    0 0 100px #1597ff77;
+}
+`;
+
+document.head.appendChild(hudStyle);
+
+function updateCoreState() {
+  if (!core || !stateEl) return;
+
+  const state = stateEl.textContent.trim().toUpperCase();
+
+  core.classList.remove(
+    "state-online",
+    "state-listening",
+    "state-processing",
+    "state-speaking"
+  );
+
+  if (state.includes("LISTEN")) {
+    core.classList.add("state-listening");
+  }
+  else if (
+    state.includes("PROCESS") ||
+    state.includes("THINK")
+  ) {
+    core.classList.add("state-processing");
+  }
+  else if (
+    state.includes("SPEAK")
+  ) {
+    core.classList.add("state-speaking");
+  }
+  else {
+    core.classList.add("state-online");
+  }
+}
+
+if (stateEl && core) {
+  const coreObserver = new MutationObserver(updateCoreState);
+
+  coreObserver.observe(stateEl, {
+    childList: true,
+    characterData: true,
+    subtree: true
+  });
+
+  updateCoreState();
+}
