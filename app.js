@@ -37,18 +37,106 @@ $("input").addEventListener("keydown",e=>{if(e.key==="Enter")send()});
 $("clear").onclick=()=>messages.innerHTML="";
 document.querySelectorAll("[data-cmd]").forEach(b=>b.onclick=()=>{ $("input").value=b.dataset.cmd; send(); });
 
-function setupSpeech(){
-  const SR=window.SpeechRecognition||window.webkitSpeechRecognition;
-  if(!SR){$("transcript").textContent="Voice input is unavailable here. Use the text field or an iPhone Shortcut.";return}
-  recognition=new SR(); recognition.lang="en-US"; recognition.interimResults=true; recognition.continuous=false;
-  recognition.onstart=()=>{listening=true;document.body.classList.add("listening");$("state").textContent="LISTENING";$("label").textContent="LISTENING…"};
-  recognition.onresult=e=>{let t="";for(const x of e.results)t+=x[0].transcript;$("input").value=t;$("transcript").textContent=t};
-  recognition.onerror=()=>stop();
-  recognition.onend=()=>{if(listening){stop();if($("input").value.trim())send()}};
+function setupSpeech() {
+  const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
+
+  if (!SR) {
+    $("transcript").textContent =
+      "Voice input is unavailable in this browser.";
+    return;
+  }
+
+  recognition = new SR();
+  recognition.lang = "en-US";
+  recognition.interimResults = true;
+  recognition.continuous = false;
+  recognition.maxAlternatives = 1;
+
+  recognition.onstart = () => {
+    listening = true;
+    document.body.classList.add("listening");
+    $("state").textContent = "LISTENING";
+    $("label").textContent = "LISTENING…";
+  };
+
+  recognition.onresult = (e) => {
+    let text = "";
+
+    for (let i = e.resultIndex; i < e.results.length; i++) {
+      text += e.results[i][0].transcript;
+    }
+
+    $("input").value = text;
+    $("transcript").textContent = text;
+  };
+
+  recognition.onerror = (e) => {
+    console.log("Speech error:", e.error);
+
+    listening = false;
+    document.body.classList.remove("listening");
+    $("state").textContent = "ONLINE";
+    $("label").textContent = "TAP TO SPEAK";
+
+    if (e.error === "not-allowed") {
+      $("transcript").textContent =
+        "Microphone permission is blocked. Allow microphone access for this website.";
+    } else if (e.error === "network") {
+      $("transcript").textContent =
+        "Speech recognition needs an internet connection.";
+    } else {
+      $("transcript").textContent =
+        "Microphone stopped. Tap again to retry.";
+    }
+  };
+
+  recognition.onend = () => {
+    listening = false;
+    document.body.classList.remove("listening");
+    $("state").textContent = "ONLINE";
+    $("label").textContent = "TAP TO SPEAK";
+
+    if ($("input").value.trim()) {
+      send();
+    }
+  };
 }
-function stop(){listening=false;document.body.classList.remove("listening");$("state").textContent="ONLINE";$("label").textContent="TAP TO SPEAK"}
-$("mic").onclick=()=>{if(!recognition)setupSpeech();if(!recognition)return;if(listening){recognition.stop();stop()}else recognition.start()};
-add("Systems online. How can I assist you?",false); setupSpeech();
+
+function stop() {
+  if (recognition && listening) {
+    try {
+      recognition.stop();
+    } catch (e) {}
+  }
+
+  listening = false;
+  document.body.classList.remove("listening");
+  $("state").textContent = "ONLINE";
+  $("label").textContent = "TAP TO SPEAK";
+}
+
+$("mic").onclick = async () => {
+  if (!recognition) {
+    setupSpeech();
+  }
+
+  if (!recognition) return;
+
+  if (listening) {
+    stop();
+    return;
+  }
+
+  try {
+    $("transcript").textContent = "Starting microphone…";
+    recognition.start();
+  } catch (e) {
+    console.log("Microphone start error:", e);
+    stop();
+  }
+};
+
+setupSpeech();
 // ===== JARVIS V2 VISUAL CORE =====
 
 const jarvisV2Style = document.createElement("style");
